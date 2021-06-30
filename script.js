@@ -63,7 +63,7 @@ function dynamicLoadPlaces(position){
   let lat = position.latitude
   let lon = position.longitude
   console.log(lat,lon)
-  alert("4: lat: "+ lat+" lon: "+lon)
+  alert("5: lat: "+ lat+" lon: "+lon)
 
 
   var url = "https://en.wikipedia.org/w/api.php";
@@ -109,7 +109,7 @@ function renderPlaces(places) {
     icon.setAttribute('src', 'assets/map-marker.png');
 
     // for debug purposes, just show in a bigger scale, otherwise I have to personally go on places...
-    icon.setAttribute('scale', '20, 20');
+    icon.setAttribute('scale', '200, 200');
 
     icon.addEventListener('loaded', () => window.dispatchEvent(new CustomEvent('gps-entity-place-loaded')));
 
