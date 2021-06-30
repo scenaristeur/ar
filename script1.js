@@ -4,7 +4,7 @@ function loadPlaces(position){
   let lat = position.latitude
   let lon = position.longitude
   console.log(lat,lon)
-  alert("3: lat: "+ lat+" lon: "+lon)
+  alert("2: lat: "+ lat+" lon: "+lon)
 
 
   var url = "https://en.wikipedia.org/w/api.php";
@@ -51,17 +51,6 @@ function loadPlaces(position){
 
 
 window.onload = () => {
-
-  document
-         .querySelector(".say-hi-button")
-         .addEventListener("click", function () {
-           // here you can change also a-scene or a-entity properties, like
-           // changing your 3D model source, size, position and so on
-           // or you can just open links, trigger actions...
-           alert("Hi there!");
-         });
-
-
   const scene = document.querySelector('a-scene');
 
   // first get current user location
@@ -91,11 +80,26 @@ window.onload = () => {
           ev.preventDefault();
           alert(ev)
 
-          const name = ev.target.getAttribute('title');
+          // add place icon
+    const icon = document.createElement('a-image');
+    icon.setAttribute('gps-entity-place', `latitude: ${latitude}; longitude: ${longitude}`);
+    icon.setAttribute('name', place.title);
+    icon.setAttribute('src', './assets/map-marker.png');
 
-          const el = ev.detail.intersection && ev.detail.intersection.object.el;
+    // for debug purposes, just show in a bigger scale, otherwise I have to personally go on places...
+    icon.setAttribute('scale', '20, 20');
 
-          if (el && el === ev.target) {
+    icon.addEventListener('loaded', () => window.dispatchEvent(new CustomEvent('gps-entity-place-loaded')));
+
+    const clickListener = function (ev) {
+        ev.stopPropagation();
+        ev.preventDefault();
+
+        const name = ev.target.getAttribute('name');
+
+        const el = ev.detail.intersection && ev.detail.intersection.object.el;
+
+        if (el && el === ev.target) {
             const label = document.createElement('span');
             const container = document.createElement('div');
             container.setAttribute('id', 'place-label');
@@ -104,14 +108,14 @@ window.onload = () => {
             document.body.appendChild(container);
 
             setTimeout(() => {
-              container.parentElement.removeChild(container);
+                container.parentElement.removeChild(container);
             }, 1500);
-          }
-        };
+        }
+    };
 
-        placeText.addEventListener('click', clickListener);
+    icon.addEventListener('click', clickListener);
 
-        scene.appendChild(placeText);
+    scene.appendChild(icon);
       });
     })
   },
