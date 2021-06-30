@@ -10,8 +10,77 @@
     window.onload = () => {                       navigator.geolocation.getCurrentPosition((position) => {
       document.querySelector('a-text').setAttribute('gps-entity-place', `latitude: ${position.coords.latitude}; longitude: ${position.coords.longitude};`)
       document.getElementById("location").innerHTML = `latitude: ${position.coords.latitude}; longitude: ${position.coords.longitude};`
-      alert("lat: "+ position.coords.latitude+" long: "+position.coords.longitude)
+      wikidataSearch(position.coords.latitude,position.coords.longitude)
     });
+  }
+
+  function wikidataSearch(lat, long){
+    console.log(lat,long)
+    alert("lat: "+ lat+" long: "+long)
+
+
+    var url = "https://en.wikipedia.org/w/api.php";
+
+    var params = {
+      action: "query",
+      generator: "geosearch",
+      //  action=query&generator=geosearch&prop=coordinates|pageimages&ggscoord=37.7891838|-122.4033522
+      prop: "coordinates|pageimages|dist",
+      ggscoord: lat+"|"+long,
+      ggsradius: 10000,
+      ggslimit: 100,
+      // titles: "Wikimedia Foundation",
+      format: "json"
+    };
+
+    let params0 = {
+      //https://en.wikipedia.org/w/api.php?action=query&list=geosearch&gscoord=37.7891838%7C-122.4033522&gsradius=10000&gslimit=100
+      action: "query",
+      list: "geosearch",
+      gscoord: lat+"|"+long,
+      prop: "coordinates|pageimages",
+      gsradius: 10000,
+      gslimit: 100,
+      format: "json"
+    }
+
+
+    console.log("params", params)
+    url = url + "?origin=*";
+    Object.keys(params).forEach(function(key){url += "&" + key + "=" + params[key];});
+    console.log(url)
+    // fetch(url)
+    // .then(function(response){return response.json();})
+    // .then(function(response) {
+    //   console.log(response)
+    //   // var pages = response.query.pages;
+    //   // console.log(pages)
+    //   // for (var page in pages) {
+    //   //   console.info(pages[page])
+    //   //   console.log("Latitute: " + pages[page].coordinates[0].lat);
+    //   //   console.log("Longitude: " + pages[page].coordinates[0].lon);
+    //   // }
+    // })
+    // .catch(function(error){console.log(error);});
+    fetch(url)
+    .then(function(response){return response.json();})
+    .then(function(response) {
+      var pages = response.query.pages;
+      console.log(pages)
+      for (var page in pages) {
+        console.info(pages[page])
+        if (pages[page].coordinates != undefined){
+
+          console.log("Latitute: " + pages[page].coordinates[0].lat);
+          console.log("Longitude: " + pages[page].coordinates[0].lon);
+        }
+      }
+    })
+    .catch(function(error){console.log(error);});
+
+
+
+
   }
 </script>
 </head>
