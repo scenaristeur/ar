@@ -63,7 +63,7 @@ function dynamicLoadPlaces(position){
   let lat = position.latitude
   let lon = position.longitude
   console.log(lat,lon)
-  alert("3: lat: "+ lat+" lon: "+lon)
+  alert("4: lat: "+ lat+" lon: "+lon)
 
 
   var url = "https://en.wikipedia.org/w/api.php";
