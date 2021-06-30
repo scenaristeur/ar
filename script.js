@@ -63,7 +63,7 @@ function dynamicLoadPlaces(position){
   let lat = position.latitude
   let lon = position.longitude
   console.log(lat,lon)
-  alert("6: lat: "+ lat+" lon: "+lon)
+  alert("7: lat: "+ lat+" lon: "+lon)
 
 
   var url = "https://en.wikipedia.org/w/api.php";
@@ -116,7 +116,7 @@ function renderPlaces(places) {
     const clickListener = function (ev) {
       ev.stopPropagation();
       ev.preventDefault();
-
+alert("click", ev)
       const name = ev.target.getAttribute('name');
 
       const el = ev.detail.intersection && ev.detail.intersection.object.el;
