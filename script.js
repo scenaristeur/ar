@@ -4,7 +4,7 @@ function loadPlaces(position){
   let lat = position.latitude
   let lon = position.longitude
   console.log(lat,lon)
-  alert("lat: "+ lat+" lon: "+lon)
+  alert("2: lat: "+ lat+" lon: "+lon)
 
 
   var url = "https://en.wikipedia.org/w/api.php";

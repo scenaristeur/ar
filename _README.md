@@ -9,3 +9,6 @@
 # wikidata
 - https://www.mediawiki.org/wiki/API:Geosearch
 - https://developer.ibm.com/technologies/artificial-intelligence/articles/use-wikidata-in-ai-and-cognitive-applications-pt1/
+
+# token
+git remote set-url origin https://scenaristeur:<MYTOKEN>@github.com/scenaristeur/ar.git
