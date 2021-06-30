@@ -14,3 +14,9 @@ git remote set-url origin https://scenaristeur:<MYTOKEN>@github.com/scenaristeur
 - https://zestedesavoir.com/tutoriels/3445/explorons-wikidata/
 - https://developer.ibm.com/technologies/artificial-intelligence/articles/use-wikidata-in-ai-and-cognitive-applications-pt1/
 - https://en.wikipedia.org/w/api.php?action=help&modules=query+geosearch
+
+# arjs vue
+https://github.com/LucaJunge/arjs-vue
+
+# pull request three location npm
+https://github.com/AR-js-org/AR.js/pull/188

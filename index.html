@@ -1,122 +1,60 @@
+<!DOCTYPE html>
 <html>
+
 <head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Location Based AR.js demo</title>
-  <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
-  <script src="https://unpkg.com/aframe-look-at-component@0.8.0/dist/aframe-look-at-component.min.js"></script>
-  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+  <meta charset='utf-8'>
+  <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+  <title>GeoAR.js demo 2</title>
+  <script src='https://aframe.io/releases/1.2.0/aframe.min.js'></script>
+  <script src="https://raw.githack.com/jeromeetienne/AR.js/master/aframe/build/aframe-ar.min.js"></script>
+<!-- <script src="https://raw.githack.com/AR-js-org/AR.js/master/three.js/build/ar.js"></script> -->
   <script>
-    window.onload = () => {                       navigator.geolocation.getCurrentPosition((position) => {
-      document.querySelector('a-text').setAttribute('gps-entity-place', `latitude: ${position.coords.latitude}; longitude: ${position.coords.longitude};`)
-      document.getElementById("location").innerHTML = `latitude: ${position.coords.latitude}; longitude: ${position.coords.longitude};`
-      wikidataSearchDist(position.coords.latitude,position.coords.longitude)
-    });
+    // THREEx.ArToolkitContext.baseURL = 'https://raw.githack.com/jeromeetienne/ar.js/master/three.js/'
+    THREEx.ArToolkitContext.baseURL = 'https://github.com/AR-js-org/AR.js/tree/master/three.js/'
+  </script>
+  <script src="./script.js"></script>
+  <style>
+  .buttons {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 5em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
   }
 
-  function wikidataSearchDist(lat, long){
-    console.log(lat,long)
-    alert("lat: "+ lat+" long: "+long)
-
-
-    var url = "https://en.wikipedia.org/w/api.php";
-
-    let params = {
-      //https://en.wikipedia.org/w/api.php?action=query&list=geosearch&gscoord=37.7891838%7C-122.4033522&gsradius=10000&gslimit=100
-      action: "query",
-      list: "geosearch",
-      gscoord: lat+"|"+long,
-      prop: "coordinates|pageimages",
-      gsradius: 10000,
-      gslimit: 100,
-      format: "json"
-    }
-
-
-    console.log("params", params)
-    url = url + "?origin=*";
-    Object.keys(params).forEach(function(key){url += "&" + key + "=" + params[key];});
-    console.log(url)
-    fetch(url)
-    .then(function(response){return response.json();})
-    .then(function(response) {
-      console.log(response)
-      var res = response.query.geosearch;
-      console.log(res)
-      for (var r in res) {
-        let thing = res[r]
-        console.info(thing)
-        console.log(thing.lat, thing.lon, thing.dist)
-
-        // console.log("Latitute: " + res[r].coordinates[0].lat);
-        // console.log("Longitude: " + res[r].coordinates[0].lon);
-      }
-    })
-    .catch(function(error){console.log(error);});
-
+  .say-hi-button {
+    padding: 0.25em;
+    border-radius: 4px;
+    border: none;
+    background: white;
+    color: black;
+    width: 4em;
+    height: 2em;
   }
-
-
-  function wikidataSearch0(lat, long){
-    console.log(lat,long)
-    alert("lat: "+ lat+" long: "+long)
-
-
-    var url = "https://en.wikipedia.org/w/api.php";
-
-    var params = {
-      action: "query",
-      generator: "geosearch",
-      //  action=query&generator=geosearch&prop=coordinates|pageimages&ggscoord=37.7891838|-122.4033522
-      prop: "coordinates|pageimages|dist",
-      ggscoord: lat+"|"+long,
-      ggsradius: 10000,
-      ggslimit: 100,
-      // titles: "Wikimedia Foundation",
-      format: "json"
-    };
-
-    console.log("params", params)
-    url = url + "?origin=*";
-    Object.keys(params).forEach(function(key){url += "&" + key + "=" + params[key];});
-    console.log(url)
-
-    fetch(url)
-    .then(function(response){return response.json();})
-    .then(function(response) {
-      var pages = response.query.pages;
-      console.log(pages)
-      for (var page in pages) {
-        console.info(pages[page])
-        if (pages[page].coordinates != undefined){
-
-          console.log("Latitute: " + pages[page].coordinates[0].lat);
-          console.log("Longitude: " + pages[page].coordinates[0].lon);
-        }
-      }
-    })
-    .catch(function(error){console.log(error);});
-
-
-
-
-  }
-</script>
+</style>
 </head>
 
-<body style="margin: 0; overflow: hidden;">
-  <div id="location" style="positon:absolute,top:0px,left:0px,z-index:10">Bim</div>
-  <a-scene
-  vr-mode-ui="enabled: false"
-  embedded
-  arjs="sourceType: webcam; debugUIEnabled: false;"
+<body style='margin: 0; overflow: hidden;'>
+  <div class="buttons">
+     <button class="say-hi-button">SAY HI!</button>
+   </div>
+   <a-scene
+    vr-mode-ui="enabled: false"
+    embedded
+    arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: true;"
   >
-  <a-text
-  value="No markers around"
-  look-at="[gps-camera]"
-  scale="5 5 5"
-  ></a-text>
-  <a-camera gps-camera rotation-reader> </a-camera>
+  <!-- <a-scene
+  vr-mode-ui='enabled: false'
+  embedded
+  arjs='sourceType: webcam; sourceWidth:1280; sourceHeight:960; displayWidth: 1280; displayHeight: 960; debugUIEnabled: false;'> -->
+  <a-camera
+  gps-camera="minDistance: 40;" rotation-reader
+  simulateLatitude="45.734470099999996"
+  simulateLongitude="4.8567183"
+  ></a-camera>
 </a-scene>
 </body>
-</html>
