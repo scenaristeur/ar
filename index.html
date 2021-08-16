@@ -1,60 +1,263 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>GeoAR.js demo 2</title>
+    <script src="./js/aframe.min.js"></script>
+    <script src="./js/aframe-ar.min.js"></script>
+    <script src="https://unpkg.com/aframe-event-set-component@3.0.3/dist/aframe-event-set-component.min.js"></script>
+    <!-- <script src="https://raw.githack.com/AR-js-org/AR.js/master/three.js/build/ar.js"></script> -->
+    <script>
+      THREEx.ArToolkitContext.baseURL = "https://localpedia.glitch.me/";
 
-<head>
-  <meta charset='utf-8'>
-  <meta http-equiv='X-UA-Compatible' content='IE=edge'>
-  <title>GeoAR.js demo 2</title>
-  <script src='https://aframe.io/releases/1.2.0/aframe.min.js'></script>
-  <script src="https://raw.githack.com/jeromeetienne/AR.js/master/aframe/build/aframe-ar.min.js"></script>
-<!-- <script src="https://raw.githack.com/AR-js-org/AR.js/master/three.js/build/ar.js"></script> -->
-  <script>
-    // THREEx.ArToolkitContext.baseURL = 'https://raw.githack.com/jeromeetienne/ar.js/master/three.js/'
-    THREEx.ArToolkitContext.baseURL = 'https://github.com/AR-js-org/AR.js/tree/master/three.js/'
-  </script>
-  <script src="./script.js"></script>
-  <style>
-  .buttons {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 5em;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 10;
-  }
+      //     THREEx.ArToolkitContext.baseURL = 'https://raw.githack.com/jeromeetienne/ar.js/master/three.js/'
+      //THREEx.ArToolkitContext.baseURL = 'https://github.com/AR-js-org/AR.js/tree/master/three.js/'
+    </script>
 
-  .say-hi-button {
-    padding: 0.25em;
-    border-radius: 4px;
-    border: none;
-    background: white;
-    color: black;
-    width: 4em;
-    height: 2em;
-  }
-</style>
-</head>
+    <script>
+      AFRAME.registerComponent("handle-events", {
+        init: function() {
+          var el = this.el; // <a-box>
+          el.addEventListener("mouseenter", function() {
+            el.setAttribute("color", "#24CAFF");
+          });
+          el.addEventListener("mouseleave", function() {
+            el.setAttribute("color", "#EF2D5E");
+          });
+          el.addEventListener("click", function() {
+            el.setAttribute("scale", { x: 2, y: 1, z: 2 });
+          });
+        }
+      });
+    </script>
 
-<body style='margin: 0; overflow: hidden;'>
-  <div class="buttons">
-     <button class="say-hi-button">SAY HI!</button>
-   </div>
-   <a-scene
-    vr-mode-ui="enabled: false"
-    embedded
-    arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: true;"
-  >
-  <!-- <a-scene
+    <script>
+      AFRAME.registerComponent("change-color-on-hover", {
+        schema: {
+          color: { default: "red" }
+        },
+
+        init: function() {
+          var data = this.data;
+          var el = this.el; // <a-box>
+          var defaultColor = el.getAttribute("material").color;
+
+          el.addEventListener("mouseenter", function() {
+            el.setAttribute("color", data.color);
+          });
+
+          el.addEventListener("mouseleave", function() {
+            el.setAttribute("color", defaultColor);
+          });
+        }
+      });
+    </script>
+    <script>
+      /**
+       * Keyboard bindings to control controller and create actions via events.
+       * Position controllers in front of camera.
+       * <a-scene debug-controller> ?debug in URL to toggle on.
+       */
+      AFRAME.registerComponent("debug-controller", {
+        schema: {
+          enabled: { default: false }
+        },
+
+        init: function() {
+          var primaryHand;
+          var secondaryHand;
+
+          if (!this.data.enabled && !AFRAME.utils.getUrlParameter("debug")) {
+            return;
+          }
+
+          console.log(
+            "%c debug-controller enabled ",
+            "background: #111; color: red"
+          );
+
+          this.isTriggerDown = false;
+
+          primaryHand = document.getElementById("primaryHand");
+          secondaryHand = document.getElementById("secondaryHand");
+
+          secondaryHand.setAttribute("position", { x: -0.2, y: 1.5, z: -0.5 });
+          primaryHand.setAttribute("position", { x: 0.2, y: 1.5, z: -0.5 });
+          secondaryHand.setAttribute("rotation", { x: 35, y: 0, z: 0 });
+          primaryHand.setAttribute("rotation", { x: 35, y: 0, z: 0 });
+
+          document.addEventListener("keydown", evt => {
+            var primaryPosition;
+            var primaryRotation;
+
+            // <shift> + * for everything.
+            if (!evt.shiftKey) {
+              return;
+            }
+
+            // <space> for trigger.
+            if (evt.keyCode === 32) {
+              if (this.isTriggerDown) {
+                primaryHand.emit("triggerup");
+                this.isTriggerDown = false;
+              } else {
+                primaryHand.emit("triggerdown");
+                this.isTriggerDown = true;
+              }
+              return;
+            }
+
+            // Position bindings.
+            primaryPosition = primaryHand.getAttribute("position");
+            if (evt.keyCode === 72) {
+              primaryPosition.x -= 0.01;
+            } // h.
+            if (evt.keyCode === 74) {
+              primaryPosition.y -= 0.01;
+            } // j.
+            if (evt.keyCode === 75) {
+              primaryPosition.y += 0.01;
+            } // k.
+            if (evt.keyCode === 76) {
+              primaryPosition.x += 0.01;
+            } // l.
+            if (evt.keyCode === 59 || evt.keyCode === 186) {
+              primaryPosition.z -= 0.01;
+            } // ;.
+            if (evt.keyCode === 222) {
+              primaryPosition.z += 0.01;
+            } // ;.
+
+            // Rotation bindings.
+            primaryRotation = primaryHand.getAttribute("rotation");
+            if (evt.keyCode === 89) {
+              primaryRotation.x -= 10;
+            } // y.
+            if (evt.keyCode === 79) {
+              primaryRotation.x += 10;
+            } // o.
+
+            primaryHand.setAttribute(
+              "position",
+              AFRAME.utils.clone(primaryPosition)
+            );
+            primaryHand.setAttribute(
+              "rotation",
+              AFRAME.utils.clone(primaryRotation)
+            );
+          });
+        }
+      });
+    </script>
+
+    <script src="./script.js"></script>
+    <style>
+      .buttons {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 5em;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10;
+      }
+
+      .say-hi-button {
+        padding: 0.25em;
+        border-radius: 4px;
+        border: none;
+        background: white;
+        color: black;
+       /* width: 4em; */
+        height: 2em;
+      }
+    </style>
+  </head>
+
+  <body style="margin: 0; overflow: hidden;">
+    <div class="buttons">
+      <button class="say-hi-button">Explorez les environs</button>
+    </div>
+    <a-scene
+      debug-controller
+      vr-mode-ui="enabled: false"
+      embedded
+      arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: true;"
+    >
+      <a-box
+        position="-1 0.5 -3"
+        rotation="0 45 0"
+        color="#4CC3D9"
+        event-set__enter="_event: mouseenter; color: #8FF7FF"
+        event-set__leave="_event: mouseleave; color: #4CC3D9"
+      ></a-box>
+
+      <a-cylinder
+        position="1 0.75 -3"
+        radius="0.5"
+        height="1.5"
+        color="#FFC65D"
+        event-set__enter="_event: mouseenter; _target: #cylinderText; visible: true"
+        event-set__leave="_event: mouseleave; _target: #cylinderText; visible: false"
+      >
+        <a-text
+          id="cylinderText"
+          value="This is a cylinder"
+          align="center"
+          color="#FFF"
+          visible="false"
+          position="0 -0.55 0.55"
+          geometry="primitive: plane; width: 1.75"
+          material="color: #333"
+        ></a-text>
+      </a-cylinder>
+
+      <a-plane
+        position="0 0 -4"
+        rotation="-90 0 0"
+        width="4"
+        height="4"
+        color="#7BC8A4"
+        event-set__down="_event: mousedown; material.wireframe: true"
+        event-set__up="_event: mouseup; material.wireframe: false"
+        event-set__leave="_event: mouseleave; material.wireframe: false"
+      ></a-plane>
+
+      <a-box
+        color="#EF2D5E"
+        position="0 2 -4"
+        change-color-on-hover="color: blue"
+      ></a-box>
+
+      <a-box color="#EF2D5E" position="0 1 -4" handle-events></a-box>
+      <!-- <a-scene
   vr-mode-ui='enabled: false'
   embedded
   arjs='sourceType: webcam; sourceWidth:1280; sourceHeight:960; displayWidth: 1280; displayHeight: 960; debugUIEnabled: false;'> -->
-  <a-camera
+      <a-camera
+        gps-camera="minDistance: 40;"
+        rotation-reader
+        simulateLatitude="10"
+        simulateLongitude="10"
+      >
+        <!-- <a-entity daydream-controls></a-entity> -->
+        <a-cursor></a-cursor>
+      </a-camera>
+
+      <!--<a-sky color="#333"></a-sky>-->
+      <!--<a-plane color="#000" rotation="-90 0 0" width="500" height="500"></a-plane>-->
+
+      <!--
+       <a-camera
   gps-camera="minDistance: 40;" rotation-reader
-  simulateLatitude="45.734470099999996"
+  simulateLatitude= "45.734470099999996"
   simulateLongitude="4.8567183"
   ></a-camera>
-</a-scene>
-</body>
+
+     -->
+    </a-scene>
+  </body>
+</html>
